@@ -1,4 +1,4 @@
-
+#terminal bash
 mkdir parse_test
 cd ./parse_test
 
@@ -50,4 +50,11 @@ split-pipe \
 
 #see ../parse_test/analysis_results/sample_1_analysis_summary.html 
 #should see a clear B cell cluster (IGHG1, IGHM genes)
+
+#files of interest:
+#<sample-name>/DGE_filtered 
+#subdirectory contains only the cells that passed the pipeline’s minimum transcript count threshold. This threshold is calculated automatically based on the distribution of transcripts identified per cell.
+#DGE_filtered subdirectory contains files of interest for downstream third party analysis including cell_metadata.csv; count_matrix.csv; and target_genes.csv
+
 #all done!
+
