@@ -1,0 +1,26 @@
+mkdir parse_test
+cd ./parse_test
+
+#upload example small dataset
+#pbmc3M_S1_R1.fastq.gz 
+#pbmc3M_S1_R2.fastq.gz
+
+##Make reference genome index
+mkdir genomes
+cd genomes
+# Download genome files
+wget ftp://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz -P genomes
+wget ftp://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.gtf.gz -P genomes
+
+
+#load module that contains parse pipline split-pipe
+module load parse-pipeline
+
+# Run mkref
+split-pipe \
+  --mode mkref \
+  --genome_name hg38 \
+  --fasta ../Parse_test/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa \ #it is wise to spell out the full directory name
+  --genes ../Parse_test/genomes/Homo_sapiens.GRCh38.109.gtf \
+  --output_dir ../Parse_test/genomes/hg38
+
