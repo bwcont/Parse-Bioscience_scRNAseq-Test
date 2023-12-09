@@ -1,14 +1,16 @@
+
 mkdir parse_test
 cd ./parse_test
 
-#upload example small dataset
+#upload example small dataset. Provided by Parse Bioscience upon request
 #pbmc3M_S1_R1.fastq.gz 
 #pbmc3M_S1_R2.fastq.gz
 
 ##Make reference genome index
 mkdir genomes
 cd genomes
-# Download genome files
+# Download genome files 
+#take about 25 minutes for .fa.gz file; about 2 minutes for .gtf.gz file
 wget ftp://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz -P genomes
 wget ftp://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.gtf.gz -P genomes
 
@@ -16,11 +18,36 @@ wget ftp://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.
 #load module that contains parse pipline split-pipe
 module load parse-pipeline
 
-# Run mkref
+# Make the reference genome into the format that split-pipe likes (i.e. index the genome) 
+#takes about 16 minutes
 split-pipe \
   --mode mkref \
   --genome_name hg38 \
-  --fasta ../Parse_test/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa \ #it is wise to spell out the full directory name
-  --genes ../Parse_test/genomes/Homo_sapiens.GRCh38.109.gtf \
-  --output_dir ../Parse_test/genomes/hg38
+  --fasta ../parse_test/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa \ #it is wise to spell out the full directory name
+  --genes ../parse_test/genomes/Homo_sapiens.GRCh38.109.gtf \
+  --output_dir ../parse_test/genomes/hg38
 
+# Run split-pipe on a single sublibrary
+split-pipe \
+  --mode all \
+  --chemistry v1 \
+  --fq1 pbmc3M_S1_R1.fastq.gz \
+  --fq2 pbmc3M_S1_R2.fastq.gz \
+  --genome_dir ../parse_test/genomes/hg38 \
+  --output_dir ../parse_test/analysis_results \
+  --sample sample_1 A1-B12
+
+###The final ouputs at the end of split-pipe
+#2 MemStatus: Clean  4.2G proc, 837.0M rss, 3.4G vms, 3.9% usd, 484.0G avail
+#2 DskStatus: Clean  '/home/' 500.0M total, 3.9M (0.78%) used, 496.1M (99.22%) free
+# << Running Clean; Status True; Duration 0:00:00.41
+
+# Finished successfully (0 problems)
+# Time	Total elapsed split-pipe v1.1.2	0:06:23.75
+# Time	All done split-pipe v1.1.2	2023-12-08 21:39:23.816956+0
+###Gopher clusters were helpful
+
+
+#see ../parse_test/analysis_results/sample_1_analysis_summary.html 
+#should see a clear B cell cluster (IGHG1, IGHM genes)
+#all done!
